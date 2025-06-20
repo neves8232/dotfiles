@@ -120,11 +120,11 @@ install_python() {
 install_shell_tools() {
     log_info "Installing shell and terminal tools..."
     
-    local tools=("zsh" "git" "fzf" "ripgrep" "fd-find" "tmux" "neovim")
+    local tools=("zsh" "git" "fzf" "ripgrep" "fd-find" "tmux" "neovim" "htop")
     
     if [[ "$OS" == "macos" ]]; then
         # macOS specific tools
-        local macos_tools=("eza" "zoxide")
+        local macos_tools=("eza" "zoxide" "sesh" "borders" "yabai" "switchaudio-osx")
         tools+=("${macos_tools[@]}")
         
         for tool in "${tools[@]}"; do
@@ -133,6 +133,10 @@ install_shell_tools() {
                 case "$tool" in
                     "fd-find") brew install fd ;;
                     "ripgrep") brew install rg ;;
+                    "sesh") brew install joshmedeski/sesh/sesh ;;
+                    "borders") brew install FelixKratz/formulae/borders ;;
+                    "yabai") brew install koekeishiya/formulae/yabai ;;
+                    "switchaudio-osx") brew install switchaudio-osx ;;
                     *) brew install "$tool" ;;
                 esac
             else
@@ -141,8 +145,8 @@ install_shell_tools() {
         done
         
     elif [[ "$OS" == "debian" ]]; then
-        # Install basic tools
-        for tool in zsh git tmux neovim; do
+        # Install basic tools including htop and build tools
+        for tool in zsh git tmux neovim htop clang make fontconfig xclip unzip; do
             if ! dpkg -l | grep -q "^ii  $tool "; then
                 log_info "Installing $tool..."
                 sudo apt install -y "$tool"
@@ -150,6 +154,17 @@ install_shell_tools() {
                 log_success "$tool already installed"
             fi
         done
+        
+        # Install sesh for session management
+        if ! command_exists sesh; then
+            log_info "Installing sesh..."
+            if ! command_exists go; then
+                log_info "Installing Go for sesh..."
+                wget -q -O - https://git.io/vQhTU | bash -s -- --version 1.21.0
+                source ~/.bashrc
+            fi
+            go install github.com/joshmedeski/sesh@latest
+        fi
         
         # Install fzf
         if ! command_exists fzf; then
@@ -288,14 +303,15 @@ install_dev_tools() {
     
     # Install Mason dependencies for Neovim
     if command_exists npm; then
-        log_info "Installing language servers..."
+        log_info "Installing language servers and formatters..."
         npm install -g pyright typescript-language-server vscode-langservers-extracted
+        npm install -g prettier eslint marksman fixjson remark-cli @taplo/cli
     fi
     
     # Install Python tools
     if command_exists pip3; then
         log_info "Installing Python development tools..."
-        pip3 install --user black flake8 pylsp-server
+        pip3 install --user black flake8 pylsp-server isort mypy autopep8 yapf pylint bandit
     fi
     
     # Install Lua formatter
@@ -338,6 +354,42 @@ link_dotfiles() {
     ln -sf "$script_dir/.config" "$HOME/.config"
 }
 
+# Setup tmux and plugins
+setup_tmux() {
+    log_info "Setting up tmux and plugins..."
+    
+    # Install TPM if not already present
+    local tpm_dir="$HOME/.config/tmux/plugins/tpm"
+    if [[ ! -d "$tpm_dir" ]]; then
+        log_info "Installing TPM (Tmux Plugin Manager)..."
+        git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+    fi
+    
+    # Create missing scripts directory and calendar script
+    local scripts_dir="$HOME/.config/tmux/scripts"
+    mkdir -p "$scripts_dir"
+    
+    if [[ ! -f "$scripts_dir/cal.sh" ]]; then
+        log_info "Creating calendar script for tmux status bar..."
+        cat > "$scripts_dir/cal.sh" << 'EOF'
+#!/bin/bash
+# Simple calendar integration for tmux status bar
+if command -v cal >/dev/null 2>&1; then
+    cal | tail -n +2 | head -1 | awk '{print $1}'
+else
+    date '+%a %d'
+fi
+EOF
+        chmod +x "$scripts_dir/cal.sh"
+    fi
+    
+    # Install tmux plugins
+    log_info "Installing tmux plugins..."
+    if [[ -f "$tpm_dir/bin/install_plugins" ]]; then
+        "$tpm_dir/bin/install_plugins"
+    fi
+}
+
 # Compile SketchyBar helpers (macOS only)
 compile_sketchybar_helpers() {
     if [[ "$OS" != "macos" ]]; then
@@ -369,6 +421,7 @@ main() {
     install_dev_tools
     setup_shell
     link_dotfiles
+    setup_tmux
     compile_sketchybar_helpers
     
     log_success "Installation completed!"

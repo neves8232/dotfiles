@@ -90,8 +90,7 @@ alias la='eza -la --icons --group-directories-first'
 
 # Shell integrations
 eval "$(fzf --zsh)"
-export PATH="$HOME/.local/bin:$PATH"
-eval "$($HOME/.local/bin/zoxide init --cmd cd zsh)"
+eval "$(zoxide init --cmd cd zsh)"
 alias pip=pip3
 
 # Enhanced terminal title
@@ -106,4 +105,4 @@ preexec() {
 #Import custom scripts
 source ~/.config/shell/fzf-tab-cd.sh
 source ~/.config/shell/cdf.sh
-# Zoxide already initialized above
+eval "$(zoxide init zsh)"
