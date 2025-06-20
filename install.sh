@@ -348,10 +348,13 @@ link_dotfiles() {
     
     local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     
-    # Backup existing files
+    # Remove broken symlinks and backup existing files
     local files_to_link=(".zshrc" ".p10k.zsh")
     for file in "${files_to_link[@]}"; do
-        if [[ -f "$HOME/$file" && ! -L "$HOME/$file" ]]; then
+        if [[ -L "$HOME/$file" ]]; then
+            log_info "Removing existing symlink $file..."
+            rm "$HOME/$file"
+        elif [[ -f "$HOME/$file" ]]; then
             log_warning "Backing up existing $file to $file.backup"
             mv "$HOME/$file" "$HOME/$file.backup"
         fi

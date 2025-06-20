@@ -198,13 +198,7 @@ zstyle ':completion:*' menu no
 # SOLUÇÃO 1: Ativar globdots globalmente para cda (RECOMENDADA)
 # ═══════════════════════════════════════════════════════════════════════════════
 # Esta é a forma mais simples e eficaz
-cda() {
-    setopt localoptions globdots
-    cd "$@"
-}
-
-# Usar a completion padrão do cd para cda
-compdef cda=cd
+# cda function removed to avoid conflicts with Oh My Zsh aliases
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # SOLUÇÃO ALTERNATIVA 2: Completion customizada com globdots
