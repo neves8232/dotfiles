@@ -166,10 +166,19 @@ install_shell_tools() {
             go install github.com/joshmedeski/sesh@latest
         fi
         
-        # Install fzf
+        # Install fzf (latest version from GitHub)
         if ! command_exists fzf; then
-            log_info "Installing fzf..."
-            sudo apt install -y fzf
+            log_info "Installing latest fzf from GitHub..."
+            git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+            ~/.fzf/install --all
+        else
+            # Check if fzf version is recent enough (supports --zsh flag)
+            if ! fzf --zsh >/dev/null 2>&1; then
+                log_info "Upgrading fzf to latest version from GitHub..."
+                sudo apt remove -y fzf
+                git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+                ~/.fzf/install --all
+            fi
         fi
         
         # Install ripgrep
