@@ -171,13 +171,18 @@ install_shell_tools() {
             log_info "Installing latest fzf from GitHub..."
             git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
             ~/.fzf/install --all
+            # Add to PATH immediately
+            export PATH="$HOME/.fzf/bin:$PATH"
         else
             # Check if fzf version is recent enough (supports --zsh flag)
             if ! fzf --zsh >/dev/null 2>&1; then
                 log_info "Upgrading fzf to latest version from GitHub..."
                 sudo apt remove -y fzf
+                rm -rf ~/.fzf
                 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
                 ~/.fzf/install --all
+                # Add to PATH immediately
+                export PATH="$HOME/.fzf/bin:$PATH"
             fi
         fi
         
@@ -211,7 +216,9 @@ install_shell_tools() {
         # Install zoxide (smart cd)
         if ! command_exists zoxide; then
             log_info "Installing zoxide..."
-            curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
+            curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
+            # Add to PATH immediately
+            export PATH="$HOME/.local/bin:$PATH"
         fi
     fi
 }
@@ -320,7 +327,7 @@ install_dev_tools() {
     # Install Python tools
     if command_exists pip3; then
         log_info "Installing Python development tools..."
-        pip3 install --user black flake8 pylsp-server isort mypy autopep8 yapf pylint bandit
+        pip3 install --user --break-system-packages black flake8 pylsp-server isort mypy autopep8 yapf pylint bandit
     fi
     
     # Install Lua formatter
