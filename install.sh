@@ -327,7 +327,7 @@ install_dev_tools() {
     # Install Python tools
     if command_exists pip3; then
         log_info "Installing Python development tools..."
-        pip3 install --user --break-system-packages black flake8 pylsp-server isort mypy autopep8 yapf pylint bandit
+        pip3 install --user --break-system-packages black flake8 python-lsp-server isort mypy autopep8 yapf pylint bandit
     fi
     
     # Install Lua formatter
