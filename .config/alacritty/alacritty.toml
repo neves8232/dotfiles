@@ -6,7 +6,7 @@ TERM = "xterm-256color"
 decorations = "buttonless"
 padding.x = 10
 padding.y = 10
-opacity = 0.7
+opacity = 0.8
 blur = true
 # Ativar Option como Alt
 option_as_alt = "Both"
