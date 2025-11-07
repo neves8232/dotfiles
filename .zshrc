@@ -56,6 +56,33 @@ bindkey '^R' history-incremental-search-backward  # Ctrl+R for reverse search
 bindkey '^[[1;5C' forward-word                    # Ctrl+Right arrow
 bindkey '^[[1;5D' backward-word                   # Ctrl+Left arrow
 
+# Reduce timeout for escape sequences (eliminates delay on Command+X)
+KEYTIMEOUT=1
+
+# Word deletion (Option key)
+bindkey '^[^?' backward-kill-word                 # Option+Backspace - delete word backward
+bindkey '^[[3;3~' kill-word                       # Option+Delete - delete word forward
+
+# Undo
+bindkey '^_' undo                                 # Ctrl+/ - undo last edit
+bindkey '^Z' undo                                 # Ctrl+Z - undo last edit
+
+# Select all function (Command+A sends Ctrl+A)
+# Useful for quickly selecting entire line: Command+A then Command+C
+select-all() {
+  BUFFER=$BUFFER
+  CURSOR=0
+  zle set-mark-command
+  CURSOR=${#BUFFER}
+}
+zle -N select-all
+bindkey '^A' select-all
+
+# Note: Command+C and Command+V use Alacritty's native Copy/Paste actions
+# Note: Control+Space toggles Vi Mode in Alacritty for advanced selection/navigation
+# Note: In tmux, use Command+v to enter copy mode (configured in tmux.conf)
+
+
 # History
 HISTSIZE=5000
 HISTFILE=~/.zsh_history

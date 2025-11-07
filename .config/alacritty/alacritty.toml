@@ -18,8 +18,8 @@ size = 18
 [keyboard]
 bindings = [
 
-  { key = "Back", mods = "Alt", chars = "\u007f" },      # Option + Backspace (Apagar palavra atrás)
-  { key = "Delete", mods = "Alt", chars = "\u001b[3~" }, # Option + Delete (Apagar palavra à frente)
+  { key = "Back", mods = "Alt", chars = "\u001b\u007f" },      # Option + Backspace (Apagar palavra atrás)
+  { key = "Delete", mods = "Alt", chars = "\u001b[3;3~" }, # Option + Delete (Apagar palavra à frente)
 
   # Option + Left / Right → Mover entre palavras
   { key = "Left", mods = "Alt", chars = "\u001bb" },
@@ -32,6 +32,21 @@ bindings = [
   # Command + Up / Down → Primeiro e último comando no histórico
   { key = "Up", mods = "Command", chars = "\u001b[5~" },
   { key = "Down", mods = "Command", chars = "\u001b[6~" },
+
+  # Command + A → Select all (sends Ctrl+A)
+  { key = "A", mods = "Command", chars = "\u0001" },
+
+  # Command + C → Copy (native Alacritty action - works with any selection)
+  { key = "C", mods = "Command", action = "Copy" },
+
+  # Command + V → Paste
+  { key = "V", mods = "Command", action = "Paste" },
+
+  # Control + Space → Toggle Vi Mode (for navigation and selection)
+  { key = "Space", mods = "Control", action = "ToggleViMode" },
+
+  # Command + Backspace → Delete from cursor to beginning of line (sends Ctrl+U)
+  { key = "Back", mods = "Command", chars = "\u0015" },
 
   # brackets
   { key = "8", mods = "Alt", chars = "[" },
